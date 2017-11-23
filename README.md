@@ -1,5 +1,10 @@
 # CSI5308-Project
+
+In this project, the C++ and Message Passing Interface were exploits to implementing minmax, all the way and as far election algorithm in unidirectional rings, and capture the number of exchanged messages in each one of the algorithms, then compare the acquired messages number with the worst case complexity for each of the algorithms.
+
+
 In all of the implemented algorithms, the number of lunched processes represents the number of nodes in the rings. The connections between the nodes is identified by the fact that MPI processes have distinct IDs (process rank), in which these IDs can be viewed as a ring. Figure 1 represents 8 lunched processes connected with each other in such a way to create ring. The processes IDs can be used as a distinct IDs for the corresponding nodes, but this will limit the simulation with one case, which is the ascending order or descending order. Another way to assign distinct IDs is to use a master process to generate random distinct IDs and distribute them between the other processes. The later way of assigning IDs was used.
+
 
 To build the algorithm:
 mpic++ ./code_file.cpp -o executable_file 
