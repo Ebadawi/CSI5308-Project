@@ -40,6 +40,7 @@ bool minmax(int myval, int newval, int stage)
 int main(int argc, char *argv[])
 {
     int size, rank, mcounter, stage,myID;
+	double time1,time2;
 	int inmsg[2];	//incoming msg first element is the id and 2nd element is the stage
 	int msg[2]; 	//outgoing msg first element is the id and 2nd element is the stage
 	MPI_Status Stat;
@@ -74,6 +75,8 @@ int main(int argc, char *argv[])
 		MPI_Recv(&myID,1, MPI_INT,0, 1, MPI_COMM_WORLD, &Stat);
 	}
 	MPI_Barrier( MPI_COMM_WORLD ); // wait until all nodes get their IDs
+	if (rank==0)
+		time1=MPI_Wtime(); 
 //Start the real alg. from here
 	//cout<<"From process "<<rank<<" my ID equals "<<myID<<endl;
 	bool active =true;
@@ -95,7 +98,7 @@ int main(int argc, char *argv[])
 		{
 			if(inmsg[0]==myID)
 			{
-				cout<<"I am the leader in stage "<<inmsg[1]<<" and in process "<<rank<<" my value equals "<<inmsg[0]<<endl;
+				//cout<<"I am the leader in stage "<<inmsg[1]<<" and in process "<<rank<<" my value equals "<<inmsg[0]<<endl;
 				//send termination to the other nodes
 				msg[0]=-1;
 				msg[1]=rank;
@@ -140,11 +143,14 @@ int main(int argc, char *argv[])
 	//cout<<"*"<<endl;
 	int total_messages=0;
 	//cout<<"imad"<<endl;
+	time2=MPI_Wtime()-time1;
 	MPI_Reduce(&mcounter, &total_messages,1, MPI_INT,MPI_SUM, 0, MPI_COMM_WORLD);
+	
 	MPI_Finalize();
 	if(rank==0)
 	{	
-		cout<<"Total number of communicated messages equals to "<<total_messages<<endl;
-		cout<<"Max possible number of communicated messages equals to "<<(1.44*size*log2(size)+size)<<endl;
+		//cout<<"Total number of communicated messages equals to "<<total_messages<<endl;
+		//cout<<"Max possible number of communicated messages equals to "<<(1.44*size*log2(size)+size)<<endl;
+		cout<<size<<" "<<total_messages<<" "<<(1.44*size*log2(size)+size)<<" "<<time2<<endl;
 	}
 }

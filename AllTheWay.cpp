@@ -4,7 +4,7 @@
  Version       : 1.0
  Last modified : November 2017
  To build use  : mpic++ ./AllTheWay.cpp -o alltheway
- To run use    :mpirun -np N --hostfile hosts ./alltheway    ex: mpirun -hostfile hosts -np 3 ./alltheway
+ To run use    :mpirun -np N --hostfile hosts ./alltheway    ex: mpirun -hostfile hosts -np 10 ./alltheway
  //Change the copy to referencing
  ============================================================================
  */
@@ -24,6 +24,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     int size, rank, mcounter, stage,myID,localCounter,min;
+	double time1,time2;
 	int inmsg[2];	//incoming msg first element is the id and 2nd element is the stage
 	int msg[2]; 	//outgoing msg first element is the id and 2nd element is the stage
 	MPI_Status Stat;
@@ -58,6 +59,8 @@ int main(int argc, char *argv[])
 		MPI_Recv(&myID,1, MPI_INT,0, 1, MPI_COMM_WORLD, &Stat);
 	}
 	MPI_Barrier( MPI_COMM_WORLD ); // wait until all nodes get their IDs
+	if (rank==0)
+		time1=MPI_Wtime(); 
 //Start the real alg. from here
 	bool terminated=false;
 	mcounter=0; // number of messages I get from other nodes (used for termination)
@@ -86,16 +89,19 @@ int main(int argc, char *argv[])
 
 
 	//cout<<"*"<<endl;
-	if(myID==min)
-		cout<<"I am the leader with value "<<myID<<" and my process "<<rank<<endl;
+	//if(myID==min)
+		//cout<<"I am the leader with value "<<myID<<" and my process "<<rank<<endl;
 	int total_messages=0;
 	//cout<<"imad"<<endl;
+	time2=MPI_Wtime()-time1;
 	MPI_Reduce(&mcounter, &total_messages,1, MPI_INT,MPI_SUM, 0, MPI_COMM_WORLD);
+	
 	MPI_Finalize();
 	if(rank==0)
 	{	
-		cout<<"Total number of communicated messages equals to "<<total_messages<<endl;
-		cout<<"Max possible number of communicated messages equals to "<<(size)*(size)<<endl;
+		//cout<<"Total number of communicated messages equals to "<<total_messages<<endl;
+		//cout<<"Max possible number of communicated messages equals to "<<(size)*(size)<<endl;
+		cout<<size<<" "<<total_messages<<" "<<(size)*(size)<<" "<<time2<<endl;
 	}
 
 }

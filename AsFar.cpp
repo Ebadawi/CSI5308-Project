@@ -24,6 +24,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     int size, rank, mcounter, stage,myID,localCounter,min,tag;
+	double time1,time2;
 	int inmsg;	//incoming msg first
 	int msg; 	//outgoing msg
 	MPI_Status Stat;
@@ -59,6 +60,8 @@ int main(int argc, char *argv[])
 		MPI_Recv(&myID,1, MPI_INT,0, 1, MPI_COMM_WORLD, &Stat);
 	}
 	MPI_Barrier( MPI_COMM_WORLD ); // wait until all nodes get their IDs
+	if (rank==0)
+		time1=MPI_Wtime(); 
 //Start the real alg. from here
 	bool terminated=false;
 	//myID=size-rank+1; to try best case
@@ -107,7 +110,7 @@ int main(int argc, char *argv[])
 		MPI_Recv(&inmsg, 1, MPI_INT,incoming, MPI_ANY_TAG, MPI_COMM_WORLD, &Stat);
 		if(min==inmsg&&Stat.MPI_TAG==1)//I got my value back I am leader I should notify
 		{
-			cout<<"I am the leader with value "<<min<<" from process "<<rank<<endl;
+			//cout<<"I am the leader with value "<<min<<" from process "<<rank<<endl;
 			MPI_Send(&inmsg, 1, MPI_INT, (rank+1)%size, 2, MPI_COMM_WORLD);
 			mcounter++;//increase the counter of received messages
 			terminated=true;
@@ -130,16 +133,18 @@ int main(int argc, char *argv[])
 
 
 	//cout<<"*"<<endl;
-	if(myID==min)
-		cout<<"I am the leader with value "<<myID<<" and my process "<<rank<<endl;
+	//if(myID==min)
+		//cout<<"I am the leader with value "<<myID<<" and my process "<<rank<<endl;
 	int total_messages=0;
 	//cout<<"imad"<<endl;
+	time2=MPI_Wtime()-time1;
 	MPI_Reduce(&mcounter, &total_messages,1, MPI_INT,MPI_SUM, 0, MPI_COMM_WORLD);
 	MPI_Finalize();
 	if(rank==0)
 	{	
-		cout<<"Total number of communicated messages equals to "<<total_messages<<endl;
-		cout<<"Max possible number of communicated messages equals to "<<(size)*(size)<<endl;
+		//cout<<"Total number of communicated messages equals to "<<total_messages<<endl;
+		//cout<<"Max possible number of communicated messages equals to "<<(size)*(size)<<endl; 
+		cout<<size<<" "<<total_messages<<" "<<(size)*(size)<<" "<<time2<<endl;
 	}
 
 }
