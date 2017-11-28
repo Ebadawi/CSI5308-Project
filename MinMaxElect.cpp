@@ -2,7 +2,7 @@
  ============================================================================
  Author        : E. Badawi
  Version       : 1.0
- Last modified : November 2016
+ Last modified : November 2017
  To build use  : mpic++ ./MinMaxElect.cpp -o minmax
  To run use    :mpirun -np N --hostfile hosts ./minmax    ex: mpirun -hostfile hosts -np 3 ./minmax
  //Change the copy to referencing
